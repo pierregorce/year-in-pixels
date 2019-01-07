@@ -1,34 +1,31 @@
 <template>
-  <div @click="select">
+  <div @click="select" @mousedown="select">
     <!--    
 <div :class="'day '+ getColor(day.value) + ' selected'" v-for="day in month.days" @click="select(day)">
               {{day.dayIndex}}/{{day.value}}
     </div>-->
-    <div v-if="day.selected">
-      <div class="day">{{day.dayIndex}}/{{day.value}}</div>
+    <div v-if="selected">
+      <div :class="'day selected color-'+ day.color">
+        <!-- {{day.dayIndex}}/{{day.color}} -->
+        </div>
     </div>
     <div v-else>
-      <div class>{{day.dayIndex}}/{{day.value}}</div>
+      <div :class="'day color-'+day.color">
+        <!-- {{day.dayIndex}}/{{day.color}} -->
+        </div>
     </div>
   </div>
 </template>
 <script>
 export default {
   props: {
-    day: { type: Object, required: true }
-    // selectModes : { type: Object, required: true },
+    day: { type: Object, required: true },
+    selected : {type : Boolean, required : true}
   },
   methods: {
     select: function() {
-      if (selectModes == "selectDay") {
-      }
-
-      if (selectModes == "selectColor") {
-      }
-
-      if (selectModes == "selectOnly") {
-      }
-    }
+      this.$emit("select", this.day);
+    },
   }
 };
 </script>
