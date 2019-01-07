@@ -1,28 +1,33 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app dark>
+    <v-content>
+      <v-container>
+        <v-layout align-center justify-center>
+          <v-flex xs12>
+            <h1>qzdqzd</h1>
+            <grid></grid>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+    <v-footer app>
+      <span class="px-3">@ {{ new Date().getFullYear() }}</span>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Grid from "./components/Grid";
 
 export default {
-  name: 'app',
+  name: "App",
   components: {
-    HelloWorld
+    Grid
+  },
+  data() {
+    return {
+      //
+    };
   }
-}
+};
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
