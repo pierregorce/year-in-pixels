@@ -1,31 +1,45 @@
 <template>
-  <div @click="select" @mousedown="select">
-    <!--    
-<div :class="'day '+ getColor(day.value) + ' selected'" v-for="day in month.days" @click="select(day)">
-              {{day.dayIndex}}/{{day.value}}
-    </div>-->
-    <div v-if="selected">
-      <div :class="'day selected color-'+ day.color">
-        <!-- {{day.dayIndex}}/{{day.color}} -->
+  <div :style="`background-color:${getOddBackgroundColor()}`">
+    <div :style="`background-color:${settingApplied.colorHex}!important`">
+      <div v-if="selected">
+        <div :class="`day selected`">
+          <!-- {{date}} -->
         </div>
-    </div>
-    <div v-else>
-      <div :class="'day color-'+day.color">
-        <!-- {{day.dayIndex}}/{{day.color}} -->
+      </div>
+      <div v-else>
+        <div :class="`day color`">
+          <!-- {{date}} -->
         </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 export default {
   props: {
-    day: { type: Object, required: true },
-    selected : {type : Boolean, required : true}
+    date: { type: Number, required: true },
+    settingApplied: { type: Object, required: true, default: null },
+    selected: { type: Boolean, required: true },
+    message: { type: String, required: false, default: "" }
   },
   methods: {
-    select: function() {
-      this.$emit("select", this.day);
+    getOddBackgroundColor() {
+      if (this.isOddMonth && this.isOddDay) return "rgb(84, 84, 84)";
+      if (this.isOddMonth && !this.isOddDay) return "rgb(70, 70, 70)";
+
+      if (!this.isOddMonth && this.isOddDay) return "rgb(40, 40, 40)";
+      if (!this.isOddMonth && !this.isOddDay) return "rgb(40, 40, 40)";
+
+      return "none";
+    }
+  },
+  computed: {
+    isOddMonth() {
+      return new Date(this.date).getMonth() % 2 != 0;
     },
+    isOddDay() {
+      return new Date(this.date).getDay() % 2 != 0;
+    }
   }
 };
 </script>

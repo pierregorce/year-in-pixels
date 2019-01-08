@@ -1,9 +1,8 @@
 <template>
   <div>
-    <h3>colors</h3>
-    <div v-for="setting in settings">
-      <v-layout>
-        <!-- <v-flex xs3 :class="'color-'+setting">{{color.color}}</v-flex> -->
+    <h3>select/edit colors</h3>
+    <div v-for="(setting,index) in settings" :key="index">
+      <v-layout :style="`background-color:${setting.colorHex}`">
         <v-flex xs8 @click="selectSetting(setting)">
           <v-text-field v-model="setting.name" label="Name" solo></v-text-field>
         </v-flex>
@@ -17,43 +16,37 @@
   </div>
 </template>
 <script>
-let defaultSettings = [
-  { name: "default-1", id: 1, colorHex: "" },
-  { name: "default-2", id: 2, colorHex: "" }
-];
-
 export default {
   props: {
     settings: { type: Array, required: true },
     selectedSetting: { type: Object, required: true },
-    maxSettings: 20
+    defaultSettings: { type: Array, required: true }
   },
   data: function() {
-    return {};
+    return {
+      maxSettings: 20,
+      defaultNewColorHex: "#1976D2"
+    };
   },
   methods: {
     selectSetting: function(setting) {
       this.$emit("update:selectedSetting", setting);
     },
     removeSetting: function(setting) {
-      this.$emit("update:settings",this.settings.filter(m => m.id != setting.id));
-      if(this.selectedSetting.id == setting.id) {
-        this.$emit("update:selectedSetting", null);
+      this.$emit("update:settings", this.settings.filter(m => m.id != setting.id));
+      if (this.selectedSetting.id == setting.id) {
+        this.$emit("update:selectedSetting", {});
       }
       this.$emit("remove", setting);
     },
     addNewSetting: function() {
       if (this.settings.length >= this.maxSettings) return;
-      this.$emit("update:settings", [
-        ...this.settings,
-        { name: "default-xxx", id: this.settings.max(m=> m.id), colorHex: "" }
-      ]);
-      // for (var i = 1; i < colors.length; i++) {
-      //   if (this.colors.filter(m => m.color == i).length == 0) {
-      //     this.colors.push({ name: "todo", color: i });
-      //     return;
-      //   }
-      // }
+      let id = this.settings.reduce((a, b) => (a.id > b.id ? a : b), { id: 1 }).id;
+      let colorHex = "";
+      this.$emit("update:settings", [...this.settings, { name: "default-xxx", id: id + 1, colorHex: this.getNewColor() }]);
+    },
+    getNewColor: function() {
+      return this.defaultNewColorHex;
     }
   }
 };

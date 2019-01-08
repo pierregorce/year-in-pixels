@@ -1,82 +1,40 @@
 <template>
   <v-container fluid text-xs-center>
     <v-layout>
-      <v-flex xs4>
-        
-    <div>{{selectedDays}}</div>
-
-      </v-flex>
-      <v-flex xs4>
+      <v-flex xs6>
         <v-layout wrap>
           <v-layout>
-            <v-flex xs1 v-for="day in days">{{day}}</v-flex>
-            </v-layout>
-          <v-flex xs12 v-for="(week, index) in grid.map(m=>m.days).reduce((a,b)=> [...a, ...b],[]).chunk(7)">
+            <!-- <v-flex xs1 v-for="day in days">{{day}}</v-flex> -->
+          </v-layout>
+          <v-flex xs12 v-for="(week, index) in daysByWeeks" :key="index">
             <v-layout>
-              <v-flex xs1>{{index}}</v-flex>
-              <v-flex xs1 v-for="day in week">
-                <!-- <div class="day" @click="select(day)">{{day.dayIndex}}/{{day.value}}</div> -->
-                <day :day="day" :selected="day == selectedDays" @select="select"></day>
-              </v-flex>
+              <div class="day">{{index}}</div>
+              <div v-for="(day, index) in week" :key="index">
+                <div @click="select(day)">
+                  <day :date="day.date" :setting-applied="day.settingApplied" :message.sync="day.message" :selected="day == selectedDay"></day>
+                </div>
+              </div>
             </v-layout>
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs4>
+      <v-flex xs6>
         <v-layout>
-          <v-flex xs1 v-for="month in grid">
-            <div>{{month.monthIndex}}</div>
+          <div v-for="(month, index) in daysByMonths" :key="index">
+            <div class="day">{{index}}</div>
             <template v-for="day in month.days">
-              <day :day="day" :selected="day == selectedDays" @select="select"></day>
+              <div @click="select(day)">
+                <day :date="day.date" :setting-applied="day.settingApplied" :message.sync="day.message" :selected="day == selectedDay"></day>
+              </div>
             </template>
-            <!-- <div :class="'day '+ getColor(day.value) + ' selected'" v-for="day in month.days" @click="select(day)">
-              {{day.dayIndex}}/{{day.value}}
-            </div>-->
-          </v-flex>
+          </div>
         </v-layout>
       </v-flex>
     </v-layout>
-
-    <!-- <div>{{grid}}</div> -->
   </v-container>
 </template>
 
 <script>
-var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-var year = 2019;
-
-function daysQuantityInMonth(month, year) {
-  return new Date(year, month, 0).getDate();
-}
-function generateDays(month, year) {
-  var data = [];
-  var dayQuantity = daysQuantityInMonth(month, year);
-
-  for (var i = 0; i < dayQuantity; i++) {
-    data.push({
-      date: new Date(year, month, i + 1),
-      dayIndex: new Date(year, month, i + 1).getDay(),
-      day: days[new Date(year, month, i + 1).getDay()],
-      color: 0,
-      message: "",
-    });
-  }
-  return data;
-}
-function generateGrid(year) {
-  var grid = [];
-
-  for (var i = 0; i < months.length; i++) {
-    grid.push({
-      monthIndex: i,
-      month: months[i],
-      daysQuantity: daysQuantityInMonth(i, year),
-      days: generateDays(i, year),
-    });
-  }
-  return grid;
-}
 Array.prototype.chunk = function(chunk_size) {
   var temp = this.slice(0),
     results = [];
@@ -87,76 +45,60 @@ Array.prototype.chunk = function(chunk_size) {
   return results;
 };
 
-let grid = generateGrid(year);
-
 import Day from "./Day";
+import * as dateCalculation from "../dateCalculation.js";
 
 export default {
   components: {
     Day
   },
-  props : {
-    grid: { type: Object, required : true },
-    selectedSetting: { type: Object, required : true },
-    selectedPickMode: { type: Object, required : true },
+  props: {
+    days: { type: Array, required: true },
+    selectedSetting: { type: Object, required: true },
+    selectedPickMode: { type: Object, required: true },
+    selectedDay: { type: Object, required: true }
   },
-  data: () => ({
-    selectedDays : null,
-  }),
-  
+  data: () => ({}),
+  computed: {
+    daysByMonths: function() {
+      let dayByMonths = [];
+      let months = dateCalculation.months;
+
+      for (let i = 0; i < months.length; i++) {
+        let dayQuantity = dateCalculation.daysQuantityInMonth(i, dateCalculation.year);
+        let currentMonth = { monthIndex: i, days: [] };
+        dayByMonths.push(currentMonth);
+        for (let j = 0; j < dayQuantity; j++) {
+          let day = this.days.filter(m => m.date == new Date(dateCalculation.year, i, j + 1).getTime())[0];
+          currentMonth.days.push(day);
+        }
+      }
+      return dayByMonths;
+    },
+    daysByWeeks: function() {
+      return this.days.chunk(7);
+    }
+  },
   methods: {
-
     select: function(day) {
-        console.log(day)
-      //we should not edit day here... bads
+      console.log(day);
 
-      if (this.selectedMode == "selectDay") {
-        this.selectedDays = day;
+      if (this.selectedPickMode.value == "selectDay") {
+        this.$emit("update:selectedDay", day);
       }
 
-      if (this.selectedMode == "selectColor") {
-        this.selectedDays = day;
-        day.color = this.selectedColor;
+      if (this.selectedPickMode.value == "selectColor") {
+        this.$emit("update:selectedDay", day);
+        day.settingApplied = this.selectedSetting;
       }
 
-      if (this.selectedMode == "selectOnly") {
-        this.selectedDays = day;
+      if (this.selectedPickMode.value == "selectOnly") {
+        this.$emit("update:selectedDay", day);
       }
-
-
     }
   }
 };
 </script>
 
 <style>
-
-.color-1 {
-  background-color:#009688;
-}
-
-.color-2 {
-  background-color: #3F51B5;
-}
-.color-3 {
-  background-color: #2196F3;
-}
-
-.color-4 {
-  background-color:#C2185B;
-}
-
-.color-5 {
-  background-color:#4CAF50;
-}
-
-.color-6 {
-  background-color:#F57C00;
-}
-
-.color-7 {
-  background-color:#E64A19;
-}
-
-
 </style>
