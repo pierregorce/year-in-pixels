@@ -1,13 +1,32 @@
 <template>
   <div>
-    <h3>select a pick mode</h3>
-    <div v-for="pickMode in pickModes">
-      <v-layout :class="selectedPickMode == pickMode ? 'red': ''" @click="selectPickMode(pickMode)">
-        <v-flex xs4>{{pickMode.value}}</v-flex>
-        <v-flex xs8>{{pickMode.name}}</v-flex>
-      </v-layout>
-    </div>
-    <div>selected : {{selectedPickMode}}</div>
+    <v-card flat class="panel">
+      <v-card-text>
+        <div class="body-2 font-weight-light">
+          select a
+          <span class="black pa-1">PickMode</span>
+        </div>
+        <v-layout mt-2>
+          <v-flex xs2>
+            <v-card flat class="text-xs-center clickable">
+              <div :class="selectedPickMode == pickModes[0] ? 'cyan': ''" @click="selectPickMode(pickModes[0])">
+                <v-icon>texture</v-icon>
+                <div>Fill</div>
+              </div>
+            </v-card>
+          </v-flex>
+          <v-flex xs2>
+            <v-card flat class="text-xs-center clickable">
+              <div :class="selectedPickMode == pickModes[1] ? 'cyan': ''" @click="selectPickMode(pickModes[1])">
+                <v-icon>crop_din</v-icon>
+                <div>Select</div>
+              </div>
+            </v-card>
+          </v-flex>
+        </v-layout>
+        <!-- <div>selected : {{selectedPickMode}}</div> -->
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 

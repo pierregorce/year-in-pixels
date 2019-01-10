@@ -1,17 +1,20 @@
 <template>
   <div :style="`background-color:${getOddBackgroundColor()}`">
-    <div :style="`background-color:${settingApplied.colorHex}!important`">
-      <div v-if="selected">
-        <div :class="`day selected`">
-          <!-- {{date}} -->
+    <v-fade-transition leave-absolute>
+      <div :key="settingApplied.colorHex" :style="`background-color:${settingApplied.colorHex}!important`">
+        <div v-if="message" style="position:absolute">@</div>
+        <div v-if="selected">
+          <div :class="`day selected`">
+            <!-- {{date}} -->
+          </div>
+        </div>
+        <div v-else>
+          <div :class="`day color`">
+            <!-- {{date}} -->
+          </div>
         </div>
       </div>
-      <div v-else>
-        <div :class="`day color`">
-          <!-- {{date}} -->
-        </div>
-      </div>
-    </div>
+    </v-fade-transition>
   </div>
 </template>
 <script>
@@ -52,11 +55,12 @@ export default {
   border: 1px solid #d8d8d8;
   margin-bottom: -1px;
   text-align: center;
-  font-size: 8px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.selected {
-  border: 2px solid red;
-}
+
 </style>
 

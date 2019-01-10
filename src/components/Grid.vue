@@ -1,12 +1,11 @@
 <template>
   <v-container fluid text-xs-center>
     <v-layout>
-      <v-flex xs6>
-        <v-layout wrap>
-          <v-layout>
-            <!-- <v-flex xs1 v-for="day in days">{{day}}</v-flex> -->
-          </v-layout>
-          <v-flex xs12 v-for="(week, index) in daysByWeeks" :key="index">
+      <v-flex xs5>
+        <v-layout wrap justify-center>
+          <div class="day"></div>
+          <div class="day" v-for="dayName in dayNames">{{dayName}}</div>
+          <div v-for="(week, index) in daysByWeeks" :key="index">
             <v-layout>
               <div class="day">{{index}}</div>
               <div v-for="(day, index) in week" :key="index">
@@ -15,13 +14,19 @@
                 </div>
               </div>
             </v-layout>
-          </v-flex>
+          </div>
         </v-layout>
       </v-flex>
-      <v-flex xs6>
-        <v-layout>
+      <v-flex xs7>
+        <v-layout justify-center>
+          <div>
+            <div v-for="(month, index) in daysByMonths[0].days">
+              <div class="day">{{index}}</div>
+            </div>
+            <div class="day">31</div>
+          </div>
           <div v-for="(month, index) in daysByMonths" :key="index">
-            <div class="day">{{index}}</div>
+            <div class="day">{{monthNames[index] }}</div>
             <template v-for="day in month.days">
               <div @click="select(day)">
                 <day :date="day.date" :setting-applied="day.settingApplied" :message.sync="day.message" :selected="day == selectedDay"></day>
@@ -58,7 +63,10 @@ export default {
     selectedPickMode: { type: Object, required: true },
     selectedDay: { type: Object, required: true }
   },
-  data: () => ({}),
+  data: () => ({
+    monthNames: dateCalculation.months,
+    dayNames: dateCalculation.days
+  }),
   computed: {
     daysByMonths: function() {
       let dayByMonths = [];
@@ -81,17 +89,13 @@ export default {
   },
   methods: {
     select: function(day) {
-      console.log(day);
-
       if (this.selectedPickMode.value == "selectDay") {
         this.$emit("update:selectedDay", day);
       }
-
       if (this.selectedPickMode.value == "selectColor") {
         this.$emit("update:selectedDay", day);
         day.settingApplied = this.selectedSetting;
       }
-
       if (this.selectedPickMode.value == "selectOnly") {
         this.$emit("update:selectedDay", day);
       }

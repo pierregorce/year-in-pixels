@@ -1,24 +1,38 @@
 <template>
   <v-app dark>
     <v-content>
-      <v-container>
-        <v-layout align-center justify-center>
+      <v-container pa-2>
+        <v-layout wrap align-center justify-center>
           <v-flex xs12>
-            <v-text-field v-model="name" label="Year's name" solo></v-text-field>
-            <v-layout justify-center>
-              <v-flex xs4>
-                <pick-modes :pick-modes="pickModes" :selected-pick-mode.sync="selectedPickMode"></pick-modes>
-                <settings :settings.sync="settings" :selected-setting.sync="selectedSetting" :default-settings="defaultSettings"></settings>
-              </v-flex>
-              <v-flex xs8>
-                <div>
-                  <h3>{{new Date(selectedDay.date)}}</h3>
-                  <h4>Custom Message</h4>
-                  <message-editor v-if="Object.keys(selectedDay).length" :message.sync="selectedDay.message"></message-editor>
-                </div>
-                <grid :days="days" :selected-day.sync="selectedDay" :selected-setting="selectedSetting" :selected-pick-mode="selectedPickMode"></grid>
-              </v-flex>
-            </v-layout>
+            <div class="mb-2">
+              <span class="headline font-weight-medium">YEAR IN PIXELS</span>
+              <span class="ml-2 title font-weight-light grey--text">Lorem ipsum dolor sit amet ?</span>
+            </div>
+          </v-flex>
+
+          <v-flex xs12>
+            <v-tabs slot="extension" v-model="tab" color="grey darken-4" align-with-title height="28">
+              <v-tabs-slider color="cyan"></v-tabs-slider>
+              <v-tab v-for="(tab, index) in tabs" :key="index">{{ tab.name }}</v-tab>
+              <div class="pr-2 pl-2 clickable" style="display: flex;" v-if="tabs.length < 6" href="#" @click="addTab">
+                <v-icon class="subheading">add</v-icon>
+              </div>
+              <div class="pr-2 pl-2 clickable" style="display: flex;" v-if="tabs.length > 0" href="#" @click="removeTab">
+                <v-icon class="subheading">clear</v-icon>
+              </div>
+            </v-tabs>
+
+            <v-tabs-items v-model="tab">
+              <v-tab-item v-for="(tab, index) in tabs" :key="index">
+                <v-card flat>
+                  <v-card-text>
+                    <v-container pa-0 fluid grid-list-sm>
+                      <tab :name.sync="tab.name" :id="tab.id" :days="tab.days"></tab>
+                    </v-container>
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+            </v-tabs-items>
           </v-flex>
         </v-layout>
       </v-container>
@@ -30,53 +44,70 @@
 </template>
 
 <script>
-import Grid from "./components/Grid";
-import Settings from "./components/Settings";
-import PickModes from "./components/PickModes";
-import MessageEditor from "./components/MessageEditor";
-
-let defaultSettings = [
-  { name: "default-1", id: 1, colorHex: "#009688" },
-  { name: "default-2", id: 2, colorHex: "#3f51b5" },
-  { name: "default-2", id: 3, colorHex: "#2196f3" },
-  { name: "default-2", id: 4, colorHex: "#c2185b" },
-  { name: "default-2", id: 5, colorHex: "#4caf50" },
-  { name: "default-2", id: 6, colorHex: "#f57c00" },
-  { name: "default-2", id: 7, colorHex: "#e64a19" }
-];
-
-let pickModes = [
-  { name: "select color then affect on click", value: "selectColor" },
-  { name: "select day then affect color", value: "selectDay" },
-  { name: "select for edit message", value: "selectOnly" }
-];
-
+import Tab from "./components/Tab";
 import { getDays } from "./dateCalculation.js";
 
-let days = getDays();
+let data = [{ id: 0, name: "life", days: getDays() }, { id: 1, name: "work", days: getDays() }];
 
 export default {
   name: "App",
   components: {
-    Grid,
-    Settings,
-    PickModes,
-    MessageEditor
+    Tab
   },
   data() {
     return {
-      name: "qzdqzdqzdsgsdfg",
-
-      days: days,
-      selectedDay: {},
-
-      settings: defaultSettings,
-      defaultSettings: defaultSettings,
-      selectedSetting: defaultSettings[0],
-
-      pickModes: pickModes,
-      selectedPickMode: pickModes[0]
+      tab: null,
+      tabs: data
     };
+  },
+  watch: {
+    // name: {
+    //   handler: function() {
+    //     this.save();
+    //   },
+    //   deep: true
+    // },
+    // days: {
+    //   handler: function() {
+    //     this.save();
+    //   },
+    //   deep: true
+    // },
+    // settings: {
+    //   handler: function() {
+    //     this.save();
+    //   },
+    //   deep: true
+    // }
+  },
+  methods: {
+    save: function() {},
+    addTab: function() {
+      let id = Math.max(...this.tabs.map(m => m.id)) + 1;
+      this.tabs.push({
+        id: id,
+        name: "todo",
+        days: getDays()
+      });
+      this.tab = id;
+    },
+    removeTab: function() {
+      this.tabs = this.tabs.filter(m => m.id != this.tabs[this.tab].id);
+    }
   }
 };
 </script>
+<style>
+.clickable {
+  text-decoration: none;
+  cursor: pointer;
+}
+.panel {
+  border: 2px solid rgb(97, 97, 97) !important;
+}
+
+.selected {
+  border: 2px solid white !important;
+}
+</style>
+

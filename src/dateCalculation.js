@@ -1,5 +1,6 @@
 export const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-export const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+// export const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+export const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const year = new Date().getFullYear();
 
 export function daysQuantityInMonth(month, year) {

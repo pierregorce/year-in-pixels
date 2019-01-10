@@ -1,5 +1,5 @@
 <template>
-  <v-textarea box label="Message" auto-grow v-model="messageData"></v-textarea>
+  <v-textarea box label="Message" auto-grow v-model="messageData" :rows="2"></v-textarea>
 </template>
 <script>
 export default {
